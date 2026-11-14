@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin, ChevronDown, Search } from "lucide-react";
+import DeliverySheet from "./DeliverySheet";
+import { locationLabel, useDeliveryLocation } from "@/lib/delivery";
 
 export const HEADER_BG = "#23143E";
 export const FESTIVE_OFFSET = 20;
@@ -29,16 +31,22 @@ export function FestiveBg() {
 }
 
 function AddressButton() {
+  const [open, setOpen] = useState(false);
+  const loc = useDeliveryLocation();
   return (
-    <button
-      type="button"
-      className="mt-1 flex min-w-0 items-center rounded-[8px] py-1 text-left text-[12px] font-semibold transition md:mt-0 md:max-w-[240px] md:px-2 md:text-[13px] text-white hover:bg-white/10"
-      aria-label="Select delivery address"
-    >
-      <MapPin className="h-4 w-4 shrink-0" aria-hidden="true" />
-      <span className="truncate">Select an address</span>
-      <ChevronDown className="h-4 w-4 shrink-0" aria-hidden="true" />
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="mt-1 flex min-w-0 items-center rounded-[8px] py-1 text-left text-[12px] font-semibold transition md:mt-0 md:max-w-[240px] md:px-2 md:text-[13px] text-white hover:bg-white/10"
+        aria-label="Select delivery address"
+      >
+        <MapPin className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <span className="truncate">{locationLabel(loc)}</span>
+        <ChevronDown className="h-4 w-4 shrink-0" aria-hidden="true" />
+      </button>
+      <DeliverySheet open={open} onOpenChange={setOpen} />
+    </>
   );
 }
 

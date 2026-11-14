@@ -197,7 +197,7 @@ function CategoriesInner() {
                   setActive(t);
                   const sp = new URLSearchParams(window.location.search);
                   sp.set("gender", t.toLowerCase());
-                  window.history.replaceState(null, "", `/categories?${sp.toString()}`);
+                  window.history.replaceState(null, "", `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/categories?${sp.toString()}`);
                 }}
               />
               <div className="relative z-10 px-4 pt-3 pb-4">
