@@ -30,7 +30,7 @@ export function FestiveBg() {
   );
 }
 
-function AddressButton() {
+export function AddressButton({ variant = "light", className }) {
   const [open, setOpen] = useState(false);
   const loc = useDeliveryLocation();
   return (
@@ -38,7 +38,7 @@ function AddressButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-1 flex min-w-0 items-center rounded-[8px] py-1 text-left text-[12px] font-semibold transition md:mt-0 md:max-w-[240px] md:px-2 md:text-[13px] text-white hover:bg-white/10"
+        className={`mt-1 flex min-w-0 items-center rounded-[8px] py-1 text-left text-[12px] font-semibold transition md:mt-0 md:max-w-[240px] md:px-2 md:text-[13px] ${className ?? (variant === "light" ? "text-white hover:bg-white/10" : "text-[#A0146C] hover:bg-[#FDF3F8]")}`}
         aria-label="Select delivery address"
       >
         <MapPin className="h-4 w-4 shrink-0" aria-hidden="true" />

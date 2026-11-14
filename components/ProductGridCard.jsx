@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { Check } from "lucide-react";
 import { addToCart } from "@/lib/cart";
+import { inStock as variantInStock } from "@/lib/variants";
 import { toggleWishlist, useWishlist } from "@/lib/wishlist";
+import QuickAddSheet from "./QuickAddSheet";
 
 // Product card used on collection / shop grids
 export default function ProductGridCard({ product, onAdded }) {
@@ -13,7 +16,20 @@ export default function ProductGridCard({ product, onAdded }) {
   const [active, setActive] = useState(0);
   const images = product.images?.length ? product.images : [product.featuredImageUrl || product.imageUrl].filter(Boolean);
   const href = `/shop/${product.id}`;
-  const inStock = (product.variants ?? []).find((v) => v.inventoryQty > 0) ?? product.variants?.[0];
+  const variants = product.variants ?? [];
+  const [sheet, setSheet] = useState(false);
+  const [added, setAdded] = useState(false);
+  const onAdd = () => {
+    const stocked = variants.find(variantInStock);
+    if (variants.length > 1 || (variants.length > 0 && !stocked)) {
+      setSheet(true);
+      return;
+    }
+    addToCart(product, stocked ?? variants[0] ?? null);
+    onAdded?.(product);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
 
   return (
     <article className="group relative flex flex-col gap-1.5 min-w-0 w-full">
@@ -68,15 +84,11 @@ export default function ProductGridCard({ product, onAdded }) {
         )}
         <button
           type="button"
-          disabled={!inStock}
-          onClick={() => {
-            addToCart(product, inStock);
-            onAdded?.(product);
-          }}
-          aria-label={`Add ${product.title} to cart`}
+          onClick={onAdd}
+          aria-label={added ? `Product ${product.title} added to cart` : `Add ${product.title} to cart`}
           className="absolute z-30 -bottom-3 right-[0.5px] flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white/80 backdrop-blur-[2px] text-[#A92645] transition-all duration-200 hover:scale-105 shadow-[0_2px_18px_rgba(200,200,200,0.40),inset_0_1px_4px_rgba(255,255,255,1)] active:scale-95 cursor-pointer disabled:cursor-not-allowed disabled:opacity-45"
         >
-          <img alt="Add to cart" loading="lazy" width={14} height={14} className="h-[13px] w-[13px] object-contain" src="/add-to-cart.svg" />
+          {added ? <Check className="h-4 w-4 text-[#A92645]" strokeWidth={2.5} /> : <img alt="Add to cart" loading="lazy" width={14} height={14} className="h-[13px] w-[13px] object-contain" src="/add-to-cart.svg" />}
         </button>
       </div>
       <Link href={href} className="flex flex-col gap-0.5 px-0.5 py-2 cursor-pointer">
@@ -90,6 +102,7 @@ export default function ProductGridCard({ product, onAdded }) {
           {product.discountPercent ? <span className="text-[12px] font-light text-green-600">{product.discountPercent}%</span> : null}
         </div>
       </Link>
+      {sheet && <QuickAddSheet open product={product} mode="add" onClose={() => setSheet(false)} onSuccess={() => onAdded?.(product)} />}
     </article>
   );
 }
