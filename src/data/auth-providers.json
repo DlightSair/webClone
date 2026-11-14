@@ -1,0 +1,1 @@
+{"mobile-otp":{"id":"mobile-otp","name":"Mobile OTP","type":"credentials","signinUrl":"https://parqis.com/api/auth/signin/mobile-otp","callbackUrl":"https://parqis.com/api/auth/callback/mobile-otp"}}
